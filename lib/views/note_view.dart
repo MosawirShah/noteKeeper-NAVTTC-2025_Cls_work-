@@ -10,7 +10,7 @@ class NoteView extends StatefulWidget {
 }
 
 class _NoteViewState extends State<NoteView> {
-  List<Note> notes = [];
+ // List<Note> notes = [];
 
   @override
   Widget build(BuildContext context) {
@@ -21,25 +21,25 @@ class _NoteViewState extends State<NoteView> {
         child: FloatingActionButton(
           backgroundColor: Colors.indigo,
           child: Icon(Icons.add, color: Colors.white),
-          onPressed: () async {
-            dynamic note = await Navigator.of(
+          onPressed: ()  {
+            Navigator.of(
               context,
             ).pushNamed(RoutesName.noteDetailsView);
 
             setState(() {
-              notes.add(note);
+             // notes.add(note);
             });
           },
         ),
       ),
       body: ListView.builder(
-        itemCount: notes.length,
+        itemCount: 2     ,
         itemBuilder: (context, index) {
           return Card(
             child: ListTile(
               leading: CircleAvatar(backgroundColor: Colors.indigo),
-              title: Text(notes[index].title),
-              subtitle: Text(notes[index].description),
+              title: Text(''),
+              subtitle: Text(''),
             ),
           );
         },

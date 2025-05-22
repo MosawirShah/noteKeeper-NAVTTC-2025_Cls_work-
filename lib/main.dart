@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:note_keeper/utils/routes/app_routes.dart';
 import 'package:note_keeper/utils/routes/name_routes.dart';
+import 'package:note_keeper/view_model/note_view_model.dart';
+import 'package:note_keeper/views/splash_view.dart';
+import 'package:provider/provider.dart';
 
 void main(){
   runApp(NoteKeeperApp());
@@ -25,7 +28,8 @@ class NoteKeeperApp extends StatelessWidget {
           ),
         ),
       ),
-      initialRoute: RoutesName.splashView,
+      home: ChangeNotifierProvider(create: (context)=>NoteViewModel(),
+      child: SplashView(),),
       routes: AppRoutes.appRoutes(context),
     );
   }
