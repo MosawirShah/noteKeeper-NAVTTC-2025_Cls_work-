@@ -4,20 +4,65 @@ import 'package:note_keeper/services/db_helper.dart';
 
 class NoteViewModel with ChangeNotifier{
 
-  DatabaseHelper _databaseHelper = DatabaseHelper.instance;
+
+NoteViewModel()
+{ fetchData();
+}
+
+final _databaseHelper = DatabaseHelper.instance;
+
+  List<String> priorityList = ['High','Low'];
+
+  List<NoteModel> _noteList = [];
+  List <NoteModel> get noteList => _noteList;
+
   bool _loading = false;
   bool get loading => _loading;
 
   String _errorText = "";
   String get errorText => _errorText;
 
+  //Priority as a integer
+  int _priority = 1;
+  int get priority=> _priority;
+
+void priorityAsInt(String value){
+  switch(value){
+    case 'High':
+      _priority = 1;
+    case 'Low':
+      _priority = 2;
+  }
+  notifyListeners();
+}
+
+NoteModel? noteModel;
+
+///Get Priority as String
+  String priorityAsString(int value){
+    String stringPriority;
+    switch(value){
+      case 1:
+        stringPriority = 'High';
+        return stringPriority;
+      case 2:
+        stringPriority = 'Low';
+        return stringPriority;
+      default:
+        stringPriority = 'Low';
+        return stringPriority;
+    }
+
+  }
+
+
   fetchData()async{
     try{
       _loading = true;
       _errorText = "";
-      await _databaseHelper.fetchData();
+      _noteList = await _databaseHelper.fetchData();
       _loading = false;
-      notifyListeners();
+
     }catch(e){
       _errorText = e.toString();
       _loading = false;
@@ -29,7 +74,7 @@ class NoteViewModel with ChangeNotifier{
     try{
       _loading = true;
       _errorText = "";
-      await _databaseHelper.insertion(noteModel);
+     _databaseHelper.insertion(noteModel);
       _loading = false;
       notifyListeners();
     }catch(e){

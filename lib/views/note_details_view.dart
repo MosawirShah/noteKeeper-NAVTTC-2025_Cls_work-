@@ -19,6 +19,25 @@ class NoteDetailsView extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(height: 20,),
+          ListTile(
+            title: DropdownButton(
+                items: noteProvider.priorityList.map((String dropDownItem){
+                 return DropdownMenuItem<String>(
+                     value: dropDownItem,
+                     child: Text(dropDownItem
+                     ));
+            }).toList(),
+              iconEnabledColor: Colors.indigo,
+              dropdownColor: Colors.white,
+              iconSize: 30,
+              value: noteProvider.priorityAsString(noteProvider.priority),
+              style: TextStyle(color: Colors.indigo,fontSize: 18,fontWeight: FontWeight.bold),
+              onChanged: (selectedPriority){
+                  noteProvider.priorityAsInt(selectedPriority!);
+              },),
+
+          ),
+          SizedBox(height: 10,),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
@@ -71,21 +90,43 @@ class NoteDetailsView extends StatelessWidget {
             ),
           ),
           SizedBox(height: 40,),
-          Container(
-            width: 150,
-            height: 45,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 150,
+                height: 45,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll<Color>(Colors.indigo),
+                  ),
+                    onPressed: ()async{
+                    NoteModel noteModel = NoteModel(priority: noteProvider.priority, title: _titleController.text, description: _descriptionController.text);
+                   // noteProvider.noteList.add(noteModel);
+                     noteProvider.noteList.add(noteModel);
 
-            child: ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll<Color>(Colors.indigo),
+
+                    Navigator.of(context).pop();
+                  debugPrint("Data Saved");
+                },
+                    child: Text("SAVE",style: TextStyle(color: Colors.white),)),
               ),
-                onPressed: (){
-                NoteModel noteModel = NoteModel(priority: 1, title: _titleController.text, description: _descriptionController.text);
-                noteProvider.insertData(noteModel);
-                Navigator.of(context).pop();
-              debugPrint("Data Saved");
-            },
-                child: Text("Save",style: TextStyle(color: Colors.white),)),
+              SizedBox(width: 10,),
+              ///DELETE BUTTON
+              Container(
+                width: 150,
+                height: 45,
+                child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(Colors.indigo),
+                    ),
+                    onPressed: (){
+
+                      debugPrint("Data DELETED");
+                    },
+                    child: Text("DELETE",style: TextStyle(color: Colors.white),)),
+              ),
+            ],
           ),
         ],
       ),

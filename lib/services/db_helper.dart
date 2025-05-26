@@ -19,8 +19,8 @@ class DatabaseHelper{
 
   //CREATE/ INITIALIZE DATABASE
   Future<Database> createDb()async{
-   final documentPath = await getDatabasesPath();
-   final path = join(documentPath,'note_database.db');
+   final dataBaseDirectory = await getDatabasesPath();
+   final path = join(dataBaseDirectory,'note_database.db');
    return await openDatabase(
      path,
      version: 1,
@@ -28,8 +28,8 @@ class DatabaseHelper{
        await db.execute(
          '''
          CREATE table note(
-         id INT PRIMARY KEY AUTOINCREMENT,
-         priority INT,
+         id INTEGER PRIMARY KEY AUTOINCREMENT,
+         priority INTEGER,
          title TEXT,
          description TEXT
          ) 
@@ -44,11 +44,12 @@ class DatabaseHelper{
  insertion(NoteModel noteModel)async{
    final database = await _database;
    await database.insert('note', noteModel.toMap());
+   await fetchData();
  }
   //FETCH OPERATION
   Future<List<NoteModel>> fetchData()async{
     final database= await _database;
-    final JsonData = await database.query('notes');
+    final JsonData = await database.query('notes',orderBy: 'priority ASC');
     return  JsonData.map((mapObj)=>NoteModel.fromMapObj(mapObj)).toList();
 
 }

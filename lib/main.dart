@@ -16,21 +16,23 @@ class NoteKeeperApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.indigo,
-          foregroundColor: Colors.white,
-          titleTextStyle: GoogleFonts.roboto(
-            fontWeight: FontWeight.bold,
-            fontSize: 18
+    return ChangeNotifierProvider(
+      create: (context)=> NoteViewModel(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.indigo,
+            foregroundColor: Colors.white,
+            titleTextStyle: GoogleFonts.roboto(
+              fontWeight: FontWeight.bold,
+              fontSize: 18
+            ),
           ),
         ),
+        initialRoute: RoutesName.splashView,
+        routes: AppRoutes.appRoutes(context),
       ),
-      home: ChangeNotifierProvider(create: (context)=>NoteViewModel(),
-      child: SplashView(),),
-      routes: AppRoutes.appRoutes(context),
     );
   }
 }

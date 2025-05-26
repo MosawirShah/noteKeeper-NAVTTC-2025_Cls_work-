@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:note_keeper/utils/routes/name_routes.dart';
+import 'package:note_keeper/view_model/note_view_model.dart';
 import 'package:note_keeper/views/note_details_view.dart';
+import 'package:provider/provider.dart';
 
 class NoteView extends StatefulWidget {
   NoteView({super.key});
@@ -10,12 +12,27 @@ class NoteView extends StatefulWidget {
 }
 
 class _NoteViewState extends State<NoteView> {
- // List<Note> notes = [];
+
 
   @override
   Widget build(BuildContext context) {
+    final noteProvider = Provider.of<NoteViewModel>(context);
     return Scaffold(
       appBar: AppBar(title: Text("Note View"), centerTitle: true),
+      body: noteProvider.noteList.isEmpty ? Center(child: Text('No Note Found'),):
+      ListView.builder(
+        itemCount: noteProvider.noteList.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              leading: CircleAvatar(backgroundColor: noteProvider.noteList[index].priority == 1 ? Colors.red: Colors.amber,child: Icon(noteProvider.noteList[index].priority == 1 ? Icons.play_arrow: Icons.keyboard_arrow_right),),
+              title: Text(noteProvider.noteList[index].title),
+              subtitle: Text(""),
+              trailing: IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.indigo,size: 30,)),
+            ),
+          );
+        },
+      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: FloatingActionButton(
@@ -27,22 +44,10 @@ class _NoteViewState extends State<NoteView> {
             ).pushNamed(RoutesName.noteDetailsView);
 
             setState(() {
-             // notes.add(note);
+              // notes.add(note);
             });
           },
         ),
-      ),
-      body: ListView.builder(
-        itemCount: 2     ,
-        itemBuilder: (context, index) {
-          return Card(
-            child: ListTile(
-              leading: CircleAvatar(backgroundColor: Colors.indigo),
-              title: Text(''),
-              subtitle: Text(''),
-            ),
-          );
-        },
       ),
     );
   }
