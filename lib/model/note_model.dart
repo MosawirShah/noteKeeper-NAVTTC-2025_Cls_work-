@@ -22,6 +22,7 @@ class NoteModel {
 
   Map<String,dynamic> toMap(){
     return {
+      'id' : id,
       'title' : title,
       'priority': priority,
       'description': description

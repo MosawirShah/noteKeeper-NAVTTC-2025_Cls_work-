@@ -2,12 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:note_keeper/model/note_model.dart';
 import 'package:note_keeper/services/db_helper.dart';
 
-class NoteViewModel with ChangeNotifier{
-
-
-NoteViewModel()
-{ fetchData();
-}
+class NoteViewModel extends ChangeNotifier{
 
 final _databaseHelper = DatabaseHelper.instance;
 
@@ -19,11 +14,11 @@ final _databaseHelper = DatabaseHelper.instance;
   bool _loading = false;
   bool get loading => _loading;
 
-  String _errorText = "";
-  String get errorText => _errorText;
+  String? _errorText;
+  String? get errorText => _errorText;
 
   //Priority as a integer
-  int _priority = 1;
+  int _priority = 2;
   int get priority=> _priority;
 
 void priorityAsInt(String value){
@@ -34,6 +29,10 @@ void priorityAsInt(String value){
       _priority = 2;
   }
   notifyListeners();
+}
+
+NoteViewModel(){
+  fetchData();
 }
 
 NoteModel? noteModel;
@@ -56,30 +55,28 @@ NoteModel? noteModel;
   }
 
 
-  fetchData()async{
+  Future<void>fetchData()async{
+    _loading = true;
+    notifyListeners();
     try{
-      _loading = true;
-      _errorText = "";
       _noteList = await _databaseHelper.fetchData();
-      _loading = false;
-
+      _errorText = null;
+      notifyListeners();
     }catch(e){
       _errorText = e.toString();
+
+    }finally{
       _loading = false;
       notifyListeners();
     }
   }
 
-  insertData(NoteModel noteModel)async{
+  Future<void> insertData(NoteModel noteModel)async{
     try{
-      _loading = true;
-      _errorText = "";
      _databaseHelper.insertion(noteModel);
-      _loading = false;
-      notifyListeners();
+      await fetchData();
     }catch(e){
       _errorText = e.toString();
-      _loading = false;
       notifyListeners();
     }
   }

@@ -5,16 +5,14 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseHelper{
 
   static final DatabaseHelper instance = DatabaseHelper._internal();
-  static late Database _database;
+  static Database? _database;
   DatabaseHelper._internal();
 
  Future<Database> get database async{
-    if(_database != null){
-      return _database;
-    }else{
+    if(_database != null) return _database!;
       _database = await createDb();
-      return _database;
-    }
+      return _database!;
+
   }
 
   //CREATE/ INITIALIZE DATABASE
@@ -41,16 +39,15 @@ class DatabaseHelper{
   }
   
   //INSERTION OPERATION
- insertion(NoteModel noteModel)async{
-   final database = await _database;
-   await database.insert('note', noteModel.toMap());
-   await fetchData();
+ Future<int> insertion(NoteModel noteModel)async{
+   final db = await database;
+   return await db.insert('note', noteModel.toMap());
  }
   //FETCH OPERATION
   Future<List<NoteModel>> fetchData()async{
-    final database= await _database;
-    final JsonData = await database.query('notes',orderBy: 'priority ASC');
-    return  JsonData.map((mapObj)=>NoteModel.fromMapObj(mapObj)).toList();
+    final db= await database;
+    final jsonData = await db.query('note',orderBy: 'priority ASC');
+    return  jsonData.map((mapObj)=>NoteModel.fromMapObj(mapObj)).toList();
 
 }
 

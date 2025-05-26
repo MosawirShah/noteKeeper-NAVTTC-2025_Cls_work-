@@ -19,8 +19,8 @@ class _NoteViewState extends State<NoteView> {
     final noteProvider = Provider.of<NoteViewModel>(context);
     return Scaffold(
       appBar: AppBar(title: Text("Note View"), centerTitle: true),
-      body: noteProvider.noteList.isEmpty ? Center(child: Text('No Note Found'),):
-      ListView.builder(
+      body: noteProvider.loading ? Center(child: CircularProgressIndicator(),):
+      noteProvider.errorText != null ? Center(child: Text("ERROR: ${noteProvider.errorText}")):ListView.builder(
         itemCount: noteProvider.noteList.length,
         itemBuilder: (context, index) {
           return Card(
