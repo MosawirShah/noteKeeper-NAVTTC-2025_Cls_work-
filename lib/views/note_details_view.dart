@@ -1,18 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:note_keeper/model/note_model.dart';
 import 'package:note_keeper/view_model/note_view_model.dart';
 import 'package:provider/provider.dart';
 
-class NoteDetailsView extends StatelessWidget {
+class NoteDetailsView extends StatefulWidget {
   NoteDetailsView({super.key});
 
+  @override
+  State<NoteDetailsView> createState() => _NoteDetailsViewState();
+}
+
+class _NoteDetailsViewState extends State<NoteDetailsView> {
   final _titleController = TextEditingController();
+
   final _descriptionController = TextEditingController();
+
+
+  late NoteDetailArgument args;
+  late NoteViewModel noteProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize only once
+    args = ModalRoute.of(context)!.settings.arguments as NoteDetailArgument;
+    noteProvider = Provider.of<NoteViewModel>(context);
+
+    if (args.appBarTitle == "Edit Note") {
+      _titleController.text = args.noteModel!.title;
+      _descriptionController.text = args.noteModel!.description;
+      //noteProvider.priority = args.noteModel!.priority;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final noteProvider = Provider.of<NoteViewModel>(context);
+    //
+    // final noteProvider = Provider.of<NoteViewModel>(context);
+    // final args = ModalRoute.of(context)!.settings.arguments as NoteDetailArgument;
+    //
+    // if(args.appBarTitle == "Edit Note"){
+    //   _titleController.text = args.noteModel!.title;
+    //   _descriptionController.text = args.noteModel!.description;
+    // }
     return Scaffold(
-      appBar: AppBar(title: Text("Note Detail View"), centerTitle: true),
+      appBar: AppBar(title: Text(args.appBarTitle), centerTitle: true),
       body: Column(
         children: [
           SizedBox(height: 20),
@@ -93,18 +126,38 @@ class NoteDetailsView extends StatelessWidget {
                     ),
                   ),
                   onPressed: () async {
-                    NoteModel noteModel = NoteModel(
-                      priority: noteProvider.priority,
-                      title: _titleController.text.trim(),
-                      description: _descriptionController.text.trim(),
-                    );
-                    // noteProvider.noteList.add(noteModel);
-                   await noteProvider.insertData(noteModel);
+                    String time = DateFormat.yMMMd().format(DateTime.now());
+                    if(args.appBarTitle == "Add Note"){
+                      NoteModel noteModel = NoteModel(
+                        priority: noteProvider.priority,
+                        title: _titleController.text.trim(),
+                        description: _descriptionController.text.trim(),
+                        time: time
+                      );
+                      // noteProvider.noteList.add(noteModel);
+                      await noteProvider.insertData(noteModel);
+                      debugPrint("Data Saved");
+                    }else if(args.appBarTitle == "Edit Note"){
+                      String title = _titleController.text;
+                      String description = _descriptionController.text;
+                      NoteModel noteModel = NoteModel(
+                        id: args.noteModel!.id,
+                        //id: noteProvider.noteModel!.id,
+                        ///ERROR REASON: I was used the (noteProvider.noteModel.id) which is null..
+                        priority: noteProvider.priority,
+                        title: title,
+                        description: description,
+                        time: time
+                      );
+                      // noteProvider.noteList.add(noteModel);
+                      await noteProvider.updateNote(noteModel);
+                      debugPrint("UPDATED");
+                    }
 
                     Navigator.of(context).pop();
-                    debugPrint("Data Saved");
+
                   },
-                  child: Text("SAVE", style: TextStyle(color: Colors.white)),
+                  child: Text(args.buttonText, style: TextStyle(color: Colors.white)),
                 ),
               ),
               SizedBox(width: 10),
@@ -120,6 +173,12 @@ class NoteDetailsView extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
+                    if(args.appBarTitle == "Edit Note"){
+                      noteProvider.deleteNote(args.noteModel!.id!);
+                      Navigator.of(context).pop();
+                    }else{
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Note is not deleted")));
+                    }
                     debugPrint("Data DELETED");
                   },
                   child: Text("DELETE", style: TextStyle(color: Colors.white)),
@@ -131,4 +190,10 @@ class NoteDetailsView extends StatelessWidget {
       ),
     );
   }
+}
+class NoteDetailArgument{
+  String appBarTitle;
+  NoteModel? noteModel;
+  String buttonText;
+  NoteDetailArgument({required this.appBarTitle,required this.buttonText, this.noteModel});
 }

@@ -20,15 +20,25 @@ class _NoteViewState extends State<NoteView> {
     return Scaffold(
       appBar: AppBar(title: Text("Note View"), centerTitle: true),
       body: noteProvider.loading ? Center(child: CircularProgressIndicator(),):
-      noteProvider.errorText != null ? Center(child: Text("ERROR: ${noteProvider.errorText}")):ListView.builder(
+      noteProvider.errorText != null ? Center(child: Text("ERROR: ${noteProvider.errorText}")):
+      noteProvider.noteList.isEmpty ?Center(
+        child: Text("No Note is found.",style: TextStyle(fontSize: 20,color: Colors.indigo,fontWeight: FontWeight.bold),),
+    ) :ListView.builder(
         itemCount: noteProvider.noteList.length,
         itemBuilder: (context, index) {
-          return Card(
-            child: ListTile(
-              leading: CircleAvatar(backgroundColor: noteProvider.noteList[index].priority == 1 ? Colors.red: Colors.amber,child: Icon(noteProvider.noteList[index].priority == 1 ? Icons.play_arrow: Icons.keyboard_arrow_right),),
-              title: Text(noteProvider.noteList[index].title),
-              subtitle: Text(""),
-              trailing: IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.indigo,size: 30,)),
+          return GestureDetector(
+            onTap: (){
+              Navigator.of(context).pushNamed(RoutesName.noteDetailsView,arguments: NoteDetailArgument(appBarTitle: "Edit Note",noteModel: noteProvider.noteList[index],buttonText: "UPDATE"));
+            },
+            child: Card(
+              child: ListTile(
+                leading: CircleAvatar(backgroundColor: noteProvider.noteList[index].priority == 1 ? Colors.red: Colors.amber,child: Icon(noteProvider.noteList[index].priority == 1 ? Icons.play_arrow: Icons.keyboard_arrow_right),),
+                title: Text(noteProvider.noteList[index].title),
+                subtitle: Text(noteProvider.noteList[index].time),
+                trailing: IconButton(onPressed: (){
+                  noteProvider.deleteNote(noteProvider.noteList[index].id!);
+                }, icon: Icon(Icons.delete,color: Colors.indigo,size: 30,)),
+              ),
             ),
           );
         },
@@ -41,11 +51,8 @@ class _NoteViewState extends State<NoteView> {
           onPressed: ()  {
             Navigator.of(
               context,
-            ).pushNamed(RoutesName.noteDetailsView);
+            ).pushNamed(RoutesName.noteDetailsView,arguments: NoteDetailArgument(appBarTitle: "Add Note",buttonText: "SAVE"));
 
-            setState(() {
-              // notes.add(note);
-            });
           },
         ),
       ),

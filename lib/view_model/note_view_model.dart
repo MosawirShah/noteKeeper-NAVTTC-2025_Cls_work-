@@ -80,4 +80,23 @@ NoteModel? noteModel;
       notifyListeners();
     }
   }
+
+  Future<void> deleteNote(int id)async{
+    try {
+      await _databaseHelper.deletion(id);
+      await fetchData();
+    }catch(e){
+      _errorText = e.toString();
+      notifyListeners();
+    }
+  }
+  Future<void> updateNote(NoteModel noteModel)async{
+    try{
+      await _databaseHelper.updation(noteModel);
+      await fetchData();
+    }catch(e){
+      _errorText = e.toString();
+      notifyListeners();
+    }
+  }
 }
